@@ -16,18 +16,24 @@ public class App {
     }
 
     public static void main(String[] args) throws IOException {
+
         System.out.println(new App().getGreeting());
         File fileInput = new File("flowers.BMP");
-        File fileOutput=new File("app/src/main/resources/flowers1.BMP");
+        File fileOutput = new File("app/src/main/resources/flowers1.BMP");
 
-        myBitmapMethod(fileInput,fileOutput);
-        File newFileInput=new File("bmp_13.BMP");
-        File newFileOutput=new File("app/src/main/resources/bmp_131.BMP");
-        myBitmapMethod(newFileInput,newFileOutput);
-        File newFileInput22=new File("sun.BMP");
-        File newFileOutput22=new File("app/src/main/resources/sun11.BMP");
-        myBitmapMethod(newFileInput22,newFileOutput22);
-
+        myBitmapMethod(fileInput, fileOutput);
+        File newFileInput = new File("bmp_13.BMP");
+        File newFileOutput = new File("app/src/main/resources/bmp_131.BMP");
+        myBitmapMethod(newFileInput, newFileOutput);
+        File newFileInput22 = new File("sun.BMP");
+        File newFileOutput22 = new File("app/src/main/resources/sunInverted.BMP");
+        invertImage(newFileInput22, newFileOutput22);
+        File newFileInput1 = new File("flowers.BMP");
+        File newFileOutput1 = new File("app/src/main/resources/flowersInvert.BMP");
+        invertImage(newFileInput1, newFileOutput1);
+        File newFileInput2 = new File("flowers.BMP");
+        File newFileOutput2 = new File("app/src/main/resources/flowersRotate.BMP");
+        rotateImage(newFileInput2,newFileOutput2);
         System.out.println("done");
 
     }
@@ -37,22 +43,56 @@ public class App {
         int width = bufferedImage.getWidth();
         int height = bufferedImage.getHeight();
 
-        BufferedImage blackOne=new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
+        BufferedImage blackOne = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         for (int index = 0; index < height; index++) {
             for (int secondIndex = 0; secondIndex < width; secondIndex++) {
-             Color  color =new Color( bufferedImage.getRGB( secondIndex,index));
-             int red=color.getRed();
-             int green=color.getGreen();
-             int blue=color.getBlue();
-             int alpha=color.getAlpha();
-             int gr=(red+green+blue)/3;
-             Color newColor=new Color(gr,gr,gr,alpha);
-             blackOne.setRGB(secondIndex,index,newColor.getRGB());
+                Color color = new Color(bufferedImage.getRGB(secondIndex, index));
+                int red = color.getRed();
+                int green = color.getGreen();
+                int blue = color.getBlue();
+                int alpha = color.getAlpha();
+                int gr = (red + green + blue) / 3;
+                Color newColor = new Color(gr, gr, gr, alpha);
+                blackOne.setRGB(secondIndex, index, newColor.getRGB());
 
 
             }
-        }ImageIO.write(blackOne,"BMP",output);
+        }
+        ImageIO.write(blackOne, "BMP", output);
     }
-    public static void myBitmapMethod(){}
+
+    public static void invertImage(File input, File output) throws IOException {
+        BufferedImage bufferedImage = ImageIO.read(input);
+
+
+        for (int x = 0; x < bufferedImage.getWidth(); x++) {
+            for (int y = 0; y < bufferedImage.getHeight(); y++) {
+                int rgba = bufferedImage.getRGB(x, y);
+                Color col = new Color(rgba, true);
+                col = new Color(255 - col.getRed(),
+                        255 - col.getGreen(),
+                        255 - col.getBlue());
+                bufferedImage.setRGB(x, y, col.getRGB());
+            }
+        }
+
+
+        ImageIO.write(bufferedImage, "BMP", output);
+
+    }
+
+    public static void rotateImage(File input, File output) throws IOException {
+        BufferedImage bufferedImage = ImageIO.read(input);
+        int width = bufferedImage.getWidth();
+        int height = bufferedImage.getHeight();
+        BufferedImage rotateImage = new BufferedImage(height, width, bufferedImage.getType());
+        for (int index = 0; index < width; index++) {
+            for (int secondIndex = 0; secondIndex < height; secondIndex++) {
+                rotateImage.setRGB(height - 1 - secondIndex, index, bufferedImage.getRGB(index, secondIndex));
+            }
+        }
+
+        ImageIO.write(rotateImage, "BMP", output);
+    }
 
 }
